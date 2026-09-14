@@ -1,0 +1,22 @@
+name: C++ CI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        compiler: [g++, clang++]
+        mode: [Release, Sanitize]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLRU_SANITIZERS=${{ matrix.mode == 'Sanitize' && 'ON' || 'OFF' }}
+      - name: Build
+        run: cmake --build build --parallel 2
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Benchmark smoke test
+        if: matrix.mode == 'Release'
+        run: ./build/lru_benchmark 10000
