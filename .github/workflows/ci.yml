@@ -10,7 +10,7 @@ jobs:
         compiler: [g++, clang++]
         mode: [Release, Sanitize]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7.0.1
       - name: Configure
         run: cmake -S . -B build -DCMAKE_CXX_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=RelWithDebInfo -DLRU_SANITIZERS=${{ matrix.mode == 'Sanitize' && 'ON' || 'OFF' }}
       - name: Build
